@@ -1,10 +1,21 @@
 package com.example.ui.components
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,8 +31,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
+import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.GraphicEq
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Share
@@ -35,9 +50,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -53,6 +70,9 @@ import com.example.data.model.PrayerTimes
 import com.example.player.AudioPlayerState
 import com.example.ui.theme.Emerald800
 import com.example.ui.theme.IslamicGold
+import com.example.ui.theme.IslamicGoldDark
+import com.example.ui.theme.IslamicGoldRoyal
+import com.example.ui.theme.SmartGradients
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,25 +85,46 @@ fun DailyQuranTopBar(
 ) {
     TopAppBar(
         title = {
-            Column {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onBackground
-                    ),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                if (!subtitle.isNullOrBlank()) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                // Subtle Islamic Golden Star Emblem
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(
+                            Brush.linearGradient(
+                                listOf(IslamicGoldRoyal, IslamicGoldDark)
+                            )
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
                     Text(
-                        text = subtitle,
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            color = MaterialTheme.colorScheme.secondary
+                        text = "📖",
+                        fontSize = 16.sp
+                    )
+                }
+                Spacer(modifier = Modifier.width(10.dp))
+                Column {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.ExtraBold,
+                            color = MaterialTheme.colorScheme.onBackground
                         ),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
+                    if (!subtitle.isNullOrBlank()) {
+                        Text(
+                            text = subtitle,
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.primary
+                            ),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                 }
             }
         },
@@ -118,64 +159,116 @@ fun DailyVerseCard(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+
+    // Pulsing animation for audio playback state
+    val infiniteTransition = rememberInfiniteTransition(label = "audio_pulse")
+    val pulseScale by infiniteTransition.animateFloat(
+        initialValue = 0.95f,
+        targetValue = 1.05f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(800),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "pulse_scale"
+    )
+
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp)),
-        color = MaterialTheme.colorScheme.primaryContainer,
-        tonalElevation = 2.dp
+            .clip(RoundedCornerShape(22.dp))
+            .border(
+                BorderStroke(
+                    width = 1.dp,
+                    brush = Brush.horizontalGradient(
+                        listOf(
+                            IslamicGoldRoyal.copy(alpha = 0.5f),
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                            IslamicGoldRoyal.copy(alpha = 0.2f)
+                        )
+                    )
+                ),
+                shape = RoundedCornerShape(22.dp)
+            ),
+        color = MaterialTheme.colorScheme.surface,
+        tonalElevation = 3.dp
     ) {
         Column(
             modifier = Modifier
                 .padding(20.dp)
                 .fillMaxWidth()
         ) {
+            // Header Row: Gold Badge + Surah Tag
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier
-                            .size(10.dp)
-                            .clip(CircleShape)
-                            .background(IslamicGold)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.4f))
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "✦",
+                            color = IslamicGoldRoyal,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "VERSE OF THE DAY",
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontWeight = FontWeight.ExtraBold,
+                                letterSpacing = 1.2.sp,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        )
+                    }
+                }
+
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant
+                ) {
                     Text(
-                        text = "VERSE OF THE DAY",
-                        style = MaterialTheme.typography.labelMedium.copy(
+                        text = surahReference,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                        style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.Bold,
-                            letterSpacing = 1.sp,
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     )
                 }
-                Text(
-                    text = surahReference,
-                    style = MaterialTheme.typography.labelSmall.copy(
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                )
             }
 
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            // Arabic Verse
-            Text(
-                text = ayah.textArabic,
-                style = MaterialTheme.typography.headlineSmall.copy(
-                    fontFamily = FontFamily.Serif,
-                    fontWeight = FontWeight.SemiBold,
-                    lineHeight = 36.sp,
-                    textAlign = TextAlign.End,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                ),
-                modifier = Modifier.fillMaxWidth()
-            )
+            // Authentic Arabic Box with Calligraphic Styling
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = ayah.textArabic,
+                        style = MaterialTheme.typography.headlineSmall.copy(
+                            fontFamily = FontFamily.Serif,
+                            fontWeight = FontWeight.SemiBold,
+                            lineHeight = 38.sp,
+                            textAlign = TextAlign.End,
+                            color = MaterialTheme.colorScheme.onSurface
+                        ),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             // Transliteration
             if (ayah.transliteration.isNotBlank()) {
@@ -183,7 +276,8 @@ fun DailyVerseCard(
                     text = ayah.transliteration,
                     style = MaterialTheme.typography.bodySmall.copy(
                         fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
-                        color = MaterialTheme.colorScheme.secondary
+                        color = MaterialTheme.colorScheme.secondary,
+                        lineHeight = 18.sp
                     )
                 )
                 Spacer(modifier = Modifier.height(6.dp))
@@ -191,14 +285,14 @@ fun DailyVerseCard(
 
             // English Translation
             Text(
-                text = ayah.translationEnglish,
+                text = "\"${ayah.translationEnglish}\"",
                 style = MaterialTheme.typography.bodyMedium.copy(
                     lineHeight = 22.sp,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(18.dp))
 
             // Action Row
             Row(
@@ -206,76 +300,123 @@ fun DailyVerseCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    // Play / Pause Button with Smart Styling
                     Surface(
                         shape = RoundedCornerShape(12.dp),
-                        color = MaterialTheme.colorScheme.primary,
+                        color = if (isPlaying) IslamicGoldRoyal else MaterialTheme.colorScheme.primary,
                         modifier = Modifier
                             .clip(RoundedCornerShape(12.dp))
                             .clickable { onPlayClick() }
                             .testTag("daily_verse_play_button")
                     ) {
                         Row(
-                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 9.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
                                 imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
                                 contentDescription = if (isPlaying) "Pause Recitation" else "Play Recitation",
-                                tint = Color.White,
+                                tint = if (isPlaying) Color.Black else Color.White,
                                 modifier = Modifier.size(18.dp)
                             )
                             Spacer(modifier = Modifier.width(6.dp))
                             Text(
-                                text = if (isPlaying) "Pause" else "Listen",
+                                text = if (isPlaying) "Playing" else "Listen",
                                 style = MaterialTheme.typography.labelMedium.copy(
                                     fontWeight = FontWeight.Bold,
-                                    color = Color.White
+                                    color = if (isPlaying) Color.Black else Color.White
                                 )
                             )
+                            if (isPlaying) {
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Icon(
+                                    imageVector = Icons.Default.GraphicEq,
+                                    contentDescription = null,
+                                    tint = Color.Black,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                            }
                         }
                     }
 
-                    Spacer(modifier = Modifier.width(8.dp))
-
+                    // Read Surah Button
                     Surface(
                         shape = RoundedCornerShape(12.dp),
-                        color = MaterialTheme.colorScheme.surface,
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline),
                         modifier = Modifier
                             .clip(RoundedCornerShape(12.dp))
                             .clickable { onReadClick() }
                             .testTag("daily_verse_read_button")
                     ) {
-                        Text(
-                            text = "Read Surah",
-                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
-                            style = MaterialTheme.typography.labelMedium.copy(
-                                fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.onSurface
+                        Row(
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 9.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Read Surah",
+                                style = MaterialTheme.typography.labelMedium.copy(
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
                             )
-                        )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurface,
+                                modifier = Modifier.size(14.dp)
+                            )
+                        }
                     }
                 }
 
-                IconButton(
-                    onClick = {
-                        val sendIntent = Intent().apply {
-                            action = Intent.ACTION_SEND
-                            putExtra(
-                                Intent.EXTRA_TEXT,
-                                "${ayah.textArabic}\n\n\"${ayah.translationEnglish}\"\n\n— Holy Quran ($surahReference)\nShared via The Daily Quran"
+                // Share & Copy Actions
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                    IconButton(
+                        onClick = {
+                            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                            val clip = ClipData.newPlainText(
+                                "Ayah",
+                                "${ayah.textArabic}\n\n\"${ayah.translationEnglish}\"\n\n— Holy Quran ($surahReference)\nthedailyquran.com"
                             )
-                            type = "text/plain"
-                        }
-                        context.startActivity(Intent.createChooser(sendIntent, "Share Daily Verse"))
-                    },
-                    modifier = Modifier.testTag("daily_verse_share_button")
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Share,
-                        contentDescription = "Share Verse",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
+                            clipboard.setPrimaryClip(clip)
+                            Toast.makeText(context, "Verse copied to clipboard", Toast.LENGTH_SHORT).show()
+                        },
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ContentCopy,
+                            contentDescription = "Copy Verse",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+
+                    IconButton(
+                        onClick = {
+                            val sendIntent = Intent().apply {
+                                action = Intent.ACTION_SEND
+                                putExtra(
+                                    Intent.EXTRA_TEXT,
+                                    "${ayah.textArabic}\n\n\"${ayah.translationEnglish}\"\n\n— Holy Quran ($surahReference)\nRead more on https://thedailyquran.com/"
+                                )
+                                type = "text/plain"
+                            }
+                            context.startActivity(Intent.createChooser(sendIntent, "Share Daily Verse"))
+                        },
+                        modifier = Modifier
+                            .size(36.dp)
+                            .testTag("daily_verse_share_button")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Share,
+                            contentDescription = "Share Verse",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
                 }
             }
         }
@@ -292,10 +433,11 @@ fun PrayerGlimpseCard(
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp))
+            .clip(RoundedCornerShape(22.dp))
             .clickable { onCardClick() },
         color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 1.dp
+        border = BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
+        tonalElevation = 2.dp
     ) {
         Column(
             modifier = Modifier
@@ -307,36 +449,73 @@ fun PrayerGlimpseCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
-                    Text(
-                        text = "Next: ${prayerTimes.nextPrayerName}",
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(38.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.primaryContainer),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AccessTime,
+                            contentDescription = "Prayer Time",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(20.dp)
                         )
-                    )
-                    Text(
-                        text = "in ${prayerTimes.nextPrayerCountdown}",
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                    }
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Column {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = "Next: ${prayerTimes.nextPrayerName}",
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Box(
+                                modifier = Modifier
+                                    .size(6.dp)
+                                    .clip(CircleShape)
+                                    .background(IslamicGoldRoyal)
+                            )
+                        }
+                        Text(
+                            text = "in ${prayerTimes.nextPrayerCountdown}",
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         )
-                    )
+                    }
                 }
 
-                Column(horizontalAlignment = Alignment.End) {
-                    Text(
-                        text = "${hijriDate.hijriDay} ${hijriDate.hijriMonthName} ${hijriDate.hijriYear} AH",
-                        style = MaterialTheme.typography.labelMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = IslamicGold
+                // Hijri Date Badge
+                Surface(
+                    shape = RoundedCornerShape(10.dp),
+                    color = MaterialTheme.colorScheme.secondaryContainer
+                ) {
+                    Column(
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                        horizontalAlignment = Alignment.End
+                    ) {
+                        Text(
+                            text = "🌙 ${hijriDate.hijriDay} ${hijriDate.hijriMonthName}",
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer
+                            )
                         )
-                    )
-                    Text(
-                        text = hijriDate.gregorianFormatted,
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        Text(
+                            text = hijriDate.gregorianFormatted,
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontSize = 10.sp,
+                                color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.8f)
+                            )
                         )
-                    )
+                    }
                 }
             }
 
@@ -360,25 +539,27 @@ fun PrayerGlimpseCard(
 @Composable
 private fun PrayerPill(name: String, time: String, isNext: Boolean) {
     Surface(
-        shape = RoundedCornerShape(10.dp),
+        shape = RoundedCornerShape(12.dp),
         color = if (isNext) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+        border = if (isNext) BorderStroke(1.2.dp, IslamicGoldRoyal) else null,
         modifier = Modifier.padding(horizontal = 2.dp)
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
+            modifier = Modifier.padding(horizontal = 9.dp, vertical = 7.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
                 text = name,
                 style = MaterialTheme.typography.labelSmall.copy(
-                    fontWeight = if (isNext) FontWeight.Bold else FontWeight.Normal,
+                    fontWeight = if (isNext) FontWeight.Bold else FontWeight.Medium,
                     color = if (isNext) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                 )
             )
+            Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = time.replace(" AM", "").replace(" PM", ""),
                 style = MaterialTheme.typography.labelSmall.copy(
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Bold,
                     color = if (isNext) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
                 )
             )
@@ -403,9 +584,13 @@ fun AudioPlayerFloatingBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp)
-                .clip(RoundedCornerShape(16.dp)),
+                .clip(RoundedCornerShape(18.dp))
+                .border(
+                    BorderStroke(1.dp, IslamicGoldRoyal.copy(alpha = 0.6f)),
+                    shape = RoundedCornerShape(18.dp)
+                ),
             color = Emerald800,
-            tonalElevation = 6.dp
+            tonalElevation = 8.dp
         ) {
             Row(
                 modifier = Modifier
@@ -420,9 +605,9 @@ fun AudioPlayerFloatingBar(
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(36.dp)
+                            .size(38.dp)
                             .clip(CircleShape)
-                            .background(IslamicGold),
+                            .background(IslamicGoldRoyal),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
@@ -458,7 +643,7 @@ fun AudioPlayerFloatingBar(
                     if (state.isBuffering) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(24.dp),
-                            color = IslamicGold,
+                            color = IslamicGoldRoyal,
                             strokeWidth = 2.dp
                         )
                         Spacer(modifier = Modifier.width(8.dp))

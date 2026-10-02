@@ -12,48 +12,48 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-// Premium Islamic Light Palette (Parchment & Emerald)
+// Smart Luxury Islamic Light Palette (Parchment, Emerald & Champagne Gold)
 private val LightColorScheme = lightColorScheme(
-    primary = Emerald800,
+    primary = ImperialEmerald800,
     onPrimary = Color.White,
-    primaryContainer = Emerald50,
-    onPrimaryContainer = Emerald950,
-    secondary = IslamicGoldWarm,
-    onSecondary = Color(0xFF2B2002),
-    secondaryContainer = IslamicGoldContainer,
-    onSecondaryContainer = IslamicGoldDark,
-    tertiary = Emerald600,
+    primaryContainer = ImperialEmerald50,
+    onPrimaryContainer = ImperialEmerald950,
+    secondary = RoyalGoldDorado,
+    onSecondary = Color(0xFF281E04),
+    secondaryContainer = RoyalGoldContainer,
+    onSecondaryContainer = RoyalGoldAntique,
+    tertiary = ImperialEmerald600,
     onTertiary = Color.White,
-    background = ParchmentBackground,
-    onBackground = TextCharcoal,
-    surface = ParchmentSurface,
-    onSurface = TextCharcoal,
-    surfaceVariant = ParchmentVariant,
-    onSurfaceVariant = TextSubtitle,
-    outline = BorderSubtle,
-    outlineVariant = Color(0xFFC7D3CB)
+    background = AlabasterParchment,
+    onBackground = TextInkBlack,
+    surface = PristineSurface,
+    onSurface = TextInkBlack,
+    surfaceVariant = SandstoneSurface,
+    onSurfaceVariant = TextMutedSage,
+    outline = WarmBorderSubtle,
+    outlineVariant = Color(0xFFCCC5B8)
 )
 
-// Premium Islamic Dark Palette (Obsidian Forest & Radiant Gold)
+// Smart Luxury Islamic Dark Palette (Obsidian Velvet, Radiant Jade & Luminous Gold)
 private val DarkColorScheme = darkColorScheme(
-    primary = Emerald300,
-    onPrimary = Emerald950,
-    primaryContainer = DarkObsidianVariant,
-    onPrimaryContainer = Emerald100,
-    secondary = IslamicGoldLight,
-    onSecondary = Color(0xFF2B2002),
-    secondaryContainer = IslamicGoldDarkContainer,
-    onSecondaryContainer = IslamicGoldLight,
-    tertiary = Emerald400,
-    onTertiary = Emerald950,
-    background = DarkObsidianBackground,
-    onBackground = DarkTextPrimary,
-    surface = DarkObsidianSurface,
-    onSurface = DarkTextPrimary,
-    surfaceVariant = DarkObsidianVariant,
-    onSurfaceVariant = DarkTextSecondary,
-    outline = DarkBorderSubtle,
-    outlineVariant = Color(0xFF264734)
+    primary = ImperialEmerald300,
+    onPrimary = ImperialEmerald950,
+    primaryContainer = ObsidianElevatedCard,
+    onPrimaryContainer = ImperialEmerald100,
+    secondary = RoyalGoldGlow,
+    onSecondary = Color(0xFF2C220B),
+    secondaryContainer = RoyalGoldDarkCard,
+    onSecondaryContainer = RoyalGoldGlow,
+    tertiary = ImperialEmerald400,
+    onTertiary = ImperialEmerald950,
+    background = ObsidianNightBase,
+    onBackground = FrostWhiteText,
+    surface = ObsidianJadeSurface,
+    onSurface = FrostWhiteText,
+    surfaceVariant = ObsidianElevatedCard,
+    onSurfaceVariant = CeladonMutedText,
+    outline = ObsidianBorderSubtle,
+    outlineVariant = Color(0xFF244835)
 )
 
 @Composable

@@ -82,19 +82,25 @@ fun AboutScreen(
         ) {
             // Hero Brand Card
             item {
-                Card(
+                Surface(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(22.dp)),
-                    colors = CardDefaults.cardColors(containerColor = Emerald800),
-                    shape = RoundedCornerShape(22.dp)
+                    shape = RoundedCornerShape(22.dp),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, IslamicGoldRoyal.copy(alpha = 0.5f)),
+                    tonalElevation = 6.dp
                 ) {
-                    Column(
+                    Box(
                         modifier = Modifier
-                            .padding(24.dp)
-                            .fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .fillMaxWidth()
+                            .background(com.example.ui.theme.SmartGradients.EmeraldLuxury)
                     ) {
+                        Column(
+                            modifier = Modifier
+                                .padding(24.dp)
+                                .fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
                         Surface(
                             shape = CircleShape,
                             color = IslamicGoldRoyal,
@@ -186,6 +192,7 @@ fun AboutScreen(
                                 color = Color.Black,
                                 fontWeight = FontWeight.Bold
                             )
+                        }
                         }
                     }
                 }

@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.sp
 import com.example.ui.components.DailyQuranTopBar
 import com.example.ui.theme.Emerald800
 import com.example.ui.theme.IslamicGold
+import com.example.ui.theme.IslamicGoldRoyal
 import com.example.ui.viewmodel.TasbeehViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -233,40 +234,48 @@ fun TasbeehScreen(
                         trackColor = MaterialTheme.colorScheme.surfaceVariant
                     )
 
-                    // Inner Tap Sphere
+                    // Inner Tap Sphere with Smart Luxury Gradient & Gold Accent Ring
                     Surface(
-                        modifier = Modifier.size(220.dp),
+                        modifier = Modifier
+                            .size(220.dp)
+                            .clip(CircleShape),
                         shape = CircleShape,
-                        color = Emerald800,
-                        tonalElevation = 6.dp
+                        border = androidx.compose.foundation.BorderStroke(2.dp, IslamicGoldRoyal.copy(alpha = 0.6f)),
+                        tonalElevation = 8.dp
                     ) {
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(com.example.ui.theme.SmartGradients.EmeraldLuxury),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = "$count",
-                                style = MaterialTheme.typography.displayMedium.copy(
-                                    fontWeight = FontWeight.ExtraBold,
-                                    color = Color.White
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                Text(
+                                    text = "$count",
+                                    style = MaterialTheme.typography.displayMedium.copy(
+                                        fontWeight = FontWeight.ExtraBold,
+                                        color = Color.White
+                                    )
                                 )
-                            )
-                            Text(
-                                text = "of $target",
-                                style = MaterialTheme.typography.labelMedium.copy(
-                                    color = Color(0xFFD4EDDA)
+                                Text(
+                                    text = "of $target",
+                                    style = MaterialTheme.typography.labelMedium.copy(
+                                        color = Color(0xFFD4EDDA)
+                                    )
                                 )
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = "TAP ANYWHERE",
-                                style = MaterialTheme.typography.labelSmall.copy(
-                                    letterSpacing = 1.2.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = IslamicGold
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = "TAP ANYWHERE",
+                                    style = MaterialTheme.typography.labelSmall.copy(
+                                        letterSpacing = 1.4.sp,
+                                        fontWeight = FontWeight.ExtraBold,
+                                        color = IslamicGoldRoyal
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
                 }

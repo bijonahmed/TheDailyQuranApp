@@ -127,8 +127,8 @@ fun DailyQuranAppContent(
                             },
                             label = { Text(item.title) },
                             colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = Emerald800,
-                                selectedTextColor = Emerald800,
+                                selectedIconColor = MaterialTheme.colorScheme.primary,
+                                selectedTextColor = MaterialTheme.colorScheme.primary,
                                 indicatorColor = MaterialTheme.colorScheme.primaryContainer,
                                 unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                 unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant

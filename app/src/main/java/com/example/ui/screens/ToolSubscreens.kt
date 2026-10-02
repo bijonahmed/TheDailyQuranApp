@@ -62,6 +62,7 @@ import com.example.data.model.IslamicName
 import com.example.ui.components.DailyQuranTopBar
 import com.example.ui.theme.Emerald800
 import com.example.ui.theme.IslamicGold
+import com.example.ui.theme.IslamicGoldRoyal
 import com.example.ui.viewmodel.ToolsViewModel
 import com.example.util.CompassSensor
 import kotlin.math.abs
@@ -95,54 +96,61 @@ fun PrayerTimesScreen(
         ) {
             // Next Prayer Hero Card
             item {
-                Card(
+                Surface(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Emerald800),
-                    shape = RoundedCornerShape(20.dp)
+                    shape = RoundedCornerShape(22.dp),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, IslamicGoldRoyal.copy(alpha = 0.5f)),
+                    tonalElevation = 6.dp
                 ) {
-                    Column(
+                    Box(
                         modifier = Modifier
-                            .padding(22.dp)
-                            .fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .fillMaxWidth()
+                            .background(com.example.ui.theme.SmartGradients.EmeraldLuxury)
                     ) {
-                        Text(
-                            text = "UPCOMING PRAYER",
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                fontWeight = FontWeight.Bold,
-                                color = IslamicGold,
-                                letterSpacing = 1.2.sp
-                            )
-                        )
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Text(
-                            text = prayerTimes.nextPrayerName,
-                            style = MaterialTheme.typography.headlineLarge.copy(
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
-                        )
-                        Text(
-                            text = "in ${prayerTimes.nextPrayerCountdown}",
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                color = Color(0xFFD4EDDA)
-                            )
-                        )
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.LocationOn,
-                                contentDescription = "Location",
-                                tint = IslamicGold,
-                                modifier = Modifier.size(16.dp)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
+                        Column(
+                            modifier = Modifier
+                                .padding(22.dp)
+                                .fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
                             Text(
-                                text = "${prayerTimes.city} • ${prayerTimes.calculationMethod}",
+                                text = "UPCOMING PRAYER",
                                 style = MaterialTheme.typography.labelSmall.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    color = IslamicGoldRoyal,
+                                    letterSpacing = 1.2.sp
+                                )
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = prayerTimes.nextPrayerName,
+                                style = MaterialTheme.typography.headlineLarge.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                            )
+                            Text(
+                                text = "in ${prayerTimes.nextPrayerCountdown}",
+                                style = MaterialTheme.typography.titleMedium.copy(
                                     color = Color(0xFFD4EDDA)
                                 )
                             )
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Default.LocationOn,
+                                    contentDescription = "Location",
+                                    tint = IslamicGoldRoyal,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = "${prayerTimes.city} • ${prayerTimes.calculationMethod}",
+                                    style = MaterialTheme.typography.labelSmall.copy(
+                                        color = Color(0xFFD4EDDA)
+                                    )
+                                )
+                            }
                         }
                     }
                 }
@@ -387,7 +395,7 @@ fun QiblaCompassScreen(
                     ) {
                         Surface(
                             shape = CircleShape,
-                            color = if (isAligned) IslamicGold else Emerald800,
+                            color = if (isAligned) IslamicGoldRoyal else MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(38.dp)
                         ) {
                             Box(contentAlignment = Alignment.Center) {
@@ -461,53 +469,60 @@ fun HijriCalendarScreen(
         ) {
             // Today's Date Banner
             item {
-                Card(
+                Surface(
                     modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = Emerald800),
-                    shape = RoundedCornerShape(20.dp)
+                    shape = RoundedCornerShape(22.dp),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, IslamicGoldRoyal.copy(alpha = 0.5f)),
+                    tonalElevation = 6.dp
                 ) {
-                    Column(
+                    Box(
                         modifier = Modifier
-                            .padding(22.dp)
-                            .fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .fillMaxWidth()
+                            .background(com.example.ui.theme.SmartGradients.EmeraldLuxury)
                     ) {
-                        Text(
-                            text = "TODAY IN HIJRI",
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                fontWeight = FontWeight.Bold,
-                                color = IslamicGold,
-                                letterSpacing = 1.2.sp
-                            )
-                        )
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Text(
-                            text = "${hijriDate.hijriDay} ${hijriDate.hijriMonthName} ${hijriDate.hijriYear} AH",
-                            style = MaterialTheme.typography.headlineMedium.copy(
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
-                        )
-                        Text(
-                            text = hijriDate.gregorianFormatted,
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                color = Color(0xFFD4EDDA)
-                            )
-                        )
-                        hijriDate.specialOccasion?.let { occasion ->
-                            Spacer(modifier = Modifier.height(10.dp))
-                            Surface(
-                                shape = RoundedCornerShape(8.dp),
-                                color = IslamicGold
-                            ) {
-                                Text(
-                                    text = occasion,
-                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                                    style = MaterialTheme.typography.labelMedium.copy(
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color.Black
-                                    )
+                        Column(
+                            modifier = Modifier
+                                .padding(22.dp)
+                                .fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "TODAY IN HIJRI",
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    color = IslamicGoldRoyal,
+                                    letterSpacing = 1.2.sp
                                 )
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = "${hijriDate.hijriDay} ${hijriDate.hijriMonthName} ${hijriDate.hijriYear} AH",
+                                style = MaterialTheme.typography.headlineMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                            )
+                            Text(
+                                text = hijriDate.gregorianFormatted,
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    color = Color(0xFFD4EDDA)
+                                )
+                            )
+                            hijriDate.specialOccasion?.let { occasion ->
+                                Spacer(modifier = Modifier.height(10.dp))
+                                Surface(
+                                    shape = RoundedCornerShape(8.dp),
+                                    color = IslamicGoldRoyal
+                                ) {
+                                    Text(
+                                        text = occasion,
+                                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                                        style = MaterialTheme.typography.labelMedium.copy(
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color.Black
+                                        )
+                                    )
+                                }
                             }
                         }
                     }

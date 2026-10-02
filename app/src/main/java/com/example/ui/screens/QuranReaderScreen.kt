@@ -5,9 +5,11 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import com.example.ui.theme.IslamicGoldRoyal
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -209,73 +211,81 @@ fun SurahHeaderBanner(
     surah: com.example.data.model.Surah,
     onPlayAll: () -> Unit
 ) {
-    Card(
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp)),
-        colors = CardDefaults.cardColors(containerColor = Emerald800),
-        shape = RoundedCornerShape(20.dp)
+            .clip(RoundedCornerShape(22.dp)),
+        border = BorderStroke(1.dp, IslamicGoldRoyal.copy(alpha = 0.5f)),
+        shape = RoundedCornerShape(22.dp),
+        tonalElevation = 4.dp
     ) {
-        Column(
+        Box(
             modifier = Modifier
-                .padding(20.dp)
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .background(com.example.ui.theme.SmartGradients.EmeraldLuxury)
+                .padding(22.dp),
+            contentAlignment = Alignment.Center
         ) {
-            Text(
-                text = surah.nameArabic,
-                style = MaterialTheme.typography.displaySmall.copy(
-                    fontFamily = FontFamily.Serif,
-                    fontWeight = FontWeight.Bold,
-                    color = IslamicGold
-                )
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = "${surah.number}. ${surah.nameEnglish}",
-                style = MaterialTheme.typography.titleLarge.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-            )
-
-            Text(
-                text = "${surah.englishTranslation} • ${surah.revelationType} • ${surah.numberOfAyahs} Verses",
-                style = MaterialTheme.typography.bodySmall.copy(
-                    color = Color(0xFFD4EDDA)
-                )
-            )
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            Surface(
-                shape = RoundedCornerShape(12.dp),
-                color = IslamicGold,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(12.dp))
-                    .clickable { onPlayAll() }
-                    .testTag("surah_play_all_button")
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                Text(
+                    text = surah.nameArabic,
+                    style = MaterialTheme.typography.displaySmall.copy(
+                        fontFamily = FontFamily.Serif,
+                        fontWeight = FontWeight.Bold,
+                        color = IslamicGoldRoyal
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = "${surah.number}. ${surah.nameEnglish}",
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color.White
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(2.dp))
+
+                Text(
+                    text = "${surah.englishTranslation} • ${surah.revelationType} • ${surah.numberOfAyahs} Verses",
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        color = Color(0xFFD4EDDA)
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = IslamicGoldRoyal,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .clickable { onPlayAll() }
+                        .testTag("surah_play_all_button")
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.PlayArrow,
-                        contentDescription = "Play Surah Recitation",
-                        tint = Color.Black,
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = "Play Surah Recitation",
-                        style = MaterialTheme.typography.labelMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Black
+                    Row(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 9.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PlayArrow,
+                            contentDescription = "Play Surah Recitation",
+                            tint = Color.Black,
+                            modifier = Modifier.size(18.dp)
                         )
-                    )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "Play Surah Recitation",
+                            style = MaterialTheme.typography.labelMedium.copy(
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black
+                            )
+                        )
+                    }
                 }
             }
         }
@@ -321,18 +331,19 @@ fun AyahCard(
     onCopy: () -> Unit,
     onShare: () -> Unit
 ) {
-    Card(
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .then(
-                if (isPlaying) Modifier.border(2.dp, IslamicGold, RoundedCornerShape(16.dp))
-                else Modifier
+            .clip(RoundedCornerShape(18.dp))
+            .border(
+                if (isPlaying) BorderStroke(1.5.dp, IslamicGoldRoyal)
+                else BorderStroke(0.5.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)),
+                shape = RoundedCornerShape(18.dp)
             )
             .testTag("ayah_card_${ayah.numberInSurah}"),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isPlaying) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface
-        ),
-        shape = RoundedCornerShape(16.dp)
+        color = if (isPlaying) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f) else MaterialTheme.colorScheme.surface,
+        tonalElevation = if (isPlaying) 4.dp else 1.dp,
+        shape = RoundedCornerShape(18.dp)
     ) {
         Column(
             modifier = Modifier
