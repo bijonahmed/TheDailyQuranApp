@@ -1,0 +1,6 @@
+{
+  "name": "The Daily Quran",
+  "description": "Read, Listen & Learn the Holy Quran with authentic Arabic text, translations, audio recitation, Hadith, Duas, and Islamic tools.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
